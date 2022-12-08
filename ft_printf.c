@@ -2,9 +2,12 @@
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   ft_printf.c                                        :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: ckojima- <ckojima-@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
+/*                                                    +:+ +:+        
+	+:+     */
+/*   By: ckojima- <ckojima-@student.42.fr>          +#+  +:+      
+	+#+        */
+/*                                                +#+#+#+#+#+  
+	+#+           */
 /*   Created: 2022/12/05 20:50:41 by ckojima-          #+#    #+#             */
 /*   Updated: 2022/12/05 20:50:41 by ckojima-         ###   ########.fr       */
 /*                                                                            */
@@ -14,40 +17,58 @@
 #include <stdio.h>
 #include <unistd.h>
 
+void	ft_putchar(char c)
+{
+	write(1, &c, 1);
+}
+
+int	sort_args(char type, va_list arg, int i) //recebo o index ou um len?
+{
+	int	len;
+
+	len = i;//valor recebido fe printf
+	if (type == 'c')
+		ft_putchar(va_arg(arg, int));
+	return (len);
+}
+
 int	ft_printf(const char *str, ...)
 {
-	va_list	args;
-	int		count;
-	int		i;
-	int		x;
+	va_list args;
+	int len;
+	int i;
 
 	va_start(args, str);
 	i = -1;
 	while (str[++i])
 	{
-		write (1, &str[i], 1);
 		if (str[i] == '%')
-		// then goes to aux function 
+		{
+			i++;
+			len = sort_args(str[i], args, i);
+		}
+		// ajustar calculo len
+		else
+			ft_putchar(str[i]);
 	}
 	va_end(args);
-	return (0); //return count
+	return (len);
 }
 
-int	main (void)
+int	main(void)
 {
-	const char	*teststr;
+	const char *teststr;
+	int			len;
 
-	teststr = "cibele";
-	ft_printf("cocolkawf;lkasfa %", 1, 13, 14, 15);
+	teststr = "cibele %c mais %c. \n";
+	len = ft_printf(teststr, 'Y', 'x');
+	printf("%d", len);
 	return (0);
 }
 /*
-STEPS:
-1)structure for defining different formats
-2)main function: 
- -check if not %
- -if % -> evaluate which kind of variable is being received
-3)(aux) functions for each format
+NEXT STEPS:
+- acertar determinacao da len
+(nao contar placeholder% + contar strlen do que for impresso na auxiliar
 */
 
 /*

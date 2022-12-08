@@ -11,7 +11,7 @@ SOURCES		= ft_printf.c
 OBJECTS		= ${SOURCES:.c=.o}
 MKLIB		= ar -rcs
 RM			= rm -rf
-LIB_LIST	= ar -t
+LIB_FILES	= ar -t
 
 ${NAME}: ${OBJECTS}
 	${MKLIB} ${NAME} {OBJECTS}
