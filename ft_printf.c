@@ -2,33 +2,45 @@
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   ft_printf.c                                        :+:      :+:    :+:   */
-/*                                                    +:+ +:+        
-	+:+     */
-/*   By: ckojima- <ckojima-@student.42.fr>          +#+  +:+      
-	+#+        */
-/*                                                +#+#+#+#+#+  
-	+#+           */
-/*   Created: 2022/12/05 20:50:41 by ckojima-          #+#    #+#             */
-/*   Updated: 2022/12/05 20:50:41 by ckojima-         ###   ########.fr       */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ckojima- <ckojima-@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/12/08 20:49:01 by ckojima-          #+#    #+#             */
+/*   Updated: 2022/12/08 20:49:01 by ckojima-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
-#include <stdio.h>
-#include <unistd.h>
+// #include <stdio.h>
+// #include <unistd.h>
+// # include <stdarg.h>
 
 void	ft_putchar(char c)
 {
 	write(1, &c, 1);
 }
 
+int	ft_putstr(char *s)
+{
+	int	i;
+
+	i = -1;
+	if (s == NULL)
+		s = "(null)";
+	while (s[++i])
+		ft_putchar(s[i]);
+	return (i);
+}
+
 int	sort_args(char type, va_list arg, int i) //recebo o index ou um len?
 {
 	int	len;
 
-	len = i;//valor recebido fe printf
+	len = i;
 	if (type == 'c')
 		ft_putchar(va_arg(arg, int));
+	else if (type == 's')
+		len += (ft_putstr(va_arg(arg, char*))) - 1;
 	return (len);
 }
 
@@ -59,16 +71,27 @@ int	main(void)
 {
 	const char *teststr;
 	int			len;
+	int			len_orig;
 
-	teststr = "cibele %c mais %c. \n";
-	len = ft_printf(teststr, 'Y', 'x');
-	printf("%d", len);
+	teststr = "cibele %s";
+	len = ft_printf(teststr, NULL);
+	printf("\n");
+	len_orig = printf(teststr, NULL);
+	printf("\n len ft_printf: %d \n len printf: %d", len, len_orig);
 	return (0);
 }
 /*
 NEXT STEPS:
 - acertar determinacao da len
 (nao contar placeholder% + contar strlen do que for impresso na auxiliar
+*/
+
+/*
+REMINDER:
+The var_type argument must be one of int, long, decimal, double, struct, union, or pointer, or a typedef of one of these types.
+
+TEST:
+passar: null, off limits, no argument, etc e comparar com os resultados do printf original
 */
 
 /*
