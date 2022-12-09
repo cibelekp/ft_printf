@@ -2,9 +2,12 @@
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   ft_printf.c                                        :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: ckojima- <ckojima-@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
+/*                                                    +:+ +:+        
+	+:+     */
+/*   By: ckojima- <ckojima-@student.42.fr>          +#+  +:+      
+	+#+        */
+/*                                                +#+#+#+#+#+  
+	+#+           */
 /*   Created: 2022/12/08 20:49:01 by ckojima-          #+#    #+#             */
 /*   Updated: 2022/12/08 20:49:01 by ckojima-         ###   ########.fr       */
 /*                                                                            */
@@ -13,7 +16,8 @@
 #include "ft_printf.h"
 // #include <stdio.h>
 // #include <unistd.h>
-// # include <stdarg.h>
+// #include <stdarg.h>
+// #include <limits.h>
 
 void	ft_putchar(char c)
 {
@@ -22,7 +26,7 @@ void	ft_putchar(char c)
 
 int	ft_putstr(char *s)
 {
-	int	i;
+	int i;
 
 	i = -1;
 	if (s == NULL)
@@ -32,16 +36,53 @@ int	ft_putstr(char *s)
 	return (i);
 }
 
-int	sort_args(char type, va_list arg, int i) //recebo o index ou um len?
+int	ft_putnb(int nb)
 {
-	int	len;
+	int len;
+
+	if (nb == INT_MIN)
+	{
+		len = ft_putstr("-2147483648");
+		return (len);
+	}
+	if (nb < 0)
+	{
+		ft_putchar('-');
+		len += 1;
+		nb *= -1;
+	}
+	if (nb >= 10)
+	{
+		ft_putnb(nb / 10);
+		len += 1;
+	}
+	ft_putchar(nb % 10 + '0');
+
+	// if (nb < 10)
+	// 	ft_putchar(nb % 10 + '0');
+	// else
+	// {
+	// 	ft_putnb(nb / 10);
+	// 	len += 1;
+	// }
+	return (len);
+}
+
+int	sort_args(char type, va_list arg, int i)
+{
+	int len;
 
 	len = i;
 	if (type == 'c')
 		ft_putchar(va_arg(arg, int));
 	else if (type == 's')
-		len += (ft_putstr(va_arg(arg, char*))) - 1;
-	return (len);
+		len += ft_putstr(va_arg(arg, char *));
+	else if (type == 'd' || type == 'i')
+		len += ft_putnb(va_arg(arg, int));
+	else if (type == 'u')
+		len += ft_putnb(va_arg(arg, int));
+		// type U is not correct; len also returning wrong
+	return (len - 1);
 }
 
 int	ft_printf(const char *str, ...)
@@ -59,7 +100,6 @@ int	ft_printf(const char *str, ...)
 			i++;
 			len = sort_args(str[i], args, i);
 		}
-		// ajustar calculo len
 		else
 			ft_putchar(str[i]);
 	}
@@ -69,29 +109,46 @@ int	ft_printf(const char *str, ...)
 
 int	main(void)
 {
-	const char *teststr;
-	int			len;
-	int			len_orig;
+	char *teststr;
+	int testint;
+	unsigned int testuint;
+	int len;
+	int len_orig;
 
-	teststr = "cibele %s";
-	len = ft_printf(teststr, NULL);
+	teststr = "TESTING STR: %s";
+	testint = INT_MIN;
+	testuint = INT_MAX;
+	// len = ft_printf(teststr, NULL);
+	// printf("\n");
+	// len_orig = printf(teststr, NULL);
+	// printf("\n len ft_printf: %d \n len printf: %d", len, len_orig);
+	// printf("\n");
+	len = ft_printf("TESTING INT: %d", testint);
 	printf("\n");
-	len_orig = printf(teststr, NULL);
-	printf("\n len ft_printf: %d \n len printf: %d", len, len_orig);
+	len_orig = printf("TESTING INT: %d", testint);
+	printf("\n len ft_printf: %d \n len    printf: %d", len, len_orig);
+	printf("\n");
+	len = ft_printf("TESTING UINT: %u", testuint);
+	printf("\n");
+	len_orig = printf("TESTING UINT: %u", testuint);
+	printf("\n len ft_printf: %d \n len    printf: %d", len, len_orig);
+	printf("\n");
 	return (0);
 }
 /*
 NEXT STEPS:
-- acertar determinacao da len
-(nao contar placeholder% + contar strlen do que for impresso na auxiliar
+- acertar calculo %u + len
+	como printf interpreta numeros negativos quando passados como %u?
 */
 
 /*
 REMINDER:
-The var_type argument must be one of int, long, decimal, double, struct, union, or pointer, or a typedef of one of these types.
+The var_type argument must be one of int, long, decimal, double, struct, union,
+	or pointer, or a typedef of one of these types.
 
 TEST:
-passar: null, off limits, no argument, etc e comparar com os resultados do printf original
+passar: null, off limits, no argument,
+	etc e comparar com os resultados do printf original
 */
 
 /*
