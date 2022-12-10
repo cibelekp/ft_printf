@@ -14,9 +14,9 @@ RM			= rm -rf
 LIB_FILES	= ar -t
 
 ${NAME}: ${OBJECTS}
-	${MKLIB} ${NAME} {OBJECTS}
-
-all: ${NAME} 
+	${MKLIB} ${NAME} ${OBJECTS}
+	
+all: ${NAME}
 
 clean:
 	${RM} ${OBJECTS}
