@@ -138,6 +138,7 @@ int	ft_printf(const char *str, ...)
 /*
 NEXT STEPS:
 - corrigir %c
+- put aux functions as static
 */
 
 /*
