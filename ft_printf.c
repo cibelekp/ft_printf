@@ -14,10 +14,6 @@
 /* ************************************************************************** */
 
 #include "ft_printf.h"
-// #include <stdio.h>
-// #include <unistd.h>
-// #include <stdarg.h>
-// #include <limits.h>
 
 int	ft_putchar(int val)
 {
@@ -80,20 +76,27 @@ int	ft_putnb(int nb)
 
 int	sort_args(char type, va_list arg, int len)
 {
+	unsigned long int ptr;
+
 	if (type == 'c')
 		len += ft_putchar(va_arg(arg, int));
 	else if (type == 's')
 		len += ft_putstr(va_arg(arg, char *));
 	else if (type == 'd' || type == 'i')
 		len += ft_putnb(va_arg(arg, int));
-	else if (type == 'x' || type == 'p')
+	else if (type == 'x')
+		len += ft_puthexa(va_arg(arg, unsigned long int), "0123456789abcdef");
+	else if (type == 'p')
 	{
-		if (type == 'p')
+		ptr = va_arg(arg, unsigned long int);
+		if (!ptr)
+			len += ft_putstr("(nil)");
+		else
 		{
 			write(1, "0x", 2);
 			len += 2;
+			len += ft_puthexa(va_arg(arg, unsigned long int), "0123456789abcdef");
 		}
-		len += ft_puthexa(va_arg(arg, unsigned long int), "0123456789abcdef");
 	}
 	else if (type == 'X')
 		len += ft_puthexa(va_arg(arg, unsigned long int), "0123456789ABCEDF");
@@ -114,7 +117,13 @@ int	ft_printf(const char *str, ...)
 		if (str[i] == '%')
 		{
 			i++;
-			len = sort_args(str[i], args, len);
+			if (str[i] == '%')
+			{
+				write(1, &str[i], 1);
+				len += 1;
+			}
+			else
+				len = sort_args(str[i], args, len);
 		}
 		else
 		{
@@ -126,68 +135,29 @@ int	ft_printf(const char *str, ...)
 	return (len);
 }
 
-// int	main(void)
-// {
-// 	char *teststr;
-// 	void *ptr;
-// 	int testint;
-// 	unsigned int testuint;
-// 	int len;
-// 	int len_orig;
+/*
+NEXT STEPS:
+- corrigir %c
+*/
 
-// 	len_orig = printf("%c\n", 0);
-// 	printf("%d \n", len_orig);
-// 	len = ft_printf("%c\n", 0);
-// 	printf("%d \n", len);
-// 	// teststr = "TESTING STR: %s";
-// 	// ptr = teststr;
-// 	// testint = INT_MIN;
-// 	// testuint = INT_MAX;
-// 	// len = ft_printf(teststr, NULL);
-// 	// printf("\n");
-// 	// len_orig = printf(teststr, NULL);
-// 	// printf("\n len ft_printf: %d \n len printf: %d", len, len_orig);
-// 	// printf("\n");
-// 	// // len_orig = printf("hexa o %p \n", ptr);
-// 	// // len = ft_printf("hexa m %p \n", ptr);
-// 	// // printf("\n len ft_printf: %d \n len    printf: %d\n", len, len_orig);
-// 	// len_orig = printf("hexa o \n");
-// 	// len = ft_printf("hexa m \n");
-// 	// // len = ft_printf("TESTING INT: %d", 2147483649);
-// 	// // printf("\n");
-// 	// // len_orig = printf("TESTING INT: %d", 2147483649);
-// 	// printf("\n len ft_printf: %d \n len    printf: %d", len, len_orig);
-// 	// printf("\n");
-// 	// len = ft_printf("TESTING UINT: %u", testuint);
-// 	// printf("\n");
-// 	// len_orig = printf("TESTING UINT: %u", testuint);
-// 	// printf("\n len ft_printf: %d \n len    printf: %d", len, len_orig);
-// 	// printf("\n");
-// 	return (0);
-// }
-// /*
-// NEXT STEPS:
-// - corrigir %c
-// */
+/*
+REMINDER:
+The var_type argument must be one of int, long, decimal, double, struct, union,
+	or pointer, or a typedef of one of these types.
 
-// /*
-// REMINDER:
-// The var_type argument must be one of int, long, decimal, double, struct, union,
-// 	or pointer, or a typedef of one of these types.
+TEST:
+passar: null, off limits, no argument,
+	etc e comparar com os resultados do printf original
+*/
 
-// TEST:
-// passar: null, off limits, no argument,
-// 	etc e comparar com os resultados do printf original
-// */
-
-// /*
-// INSTRUCTIONS:
-// -prototyped similarly to printf
-// -won’t do the buffer management in the printf function
-// -manage following conversions: sSpdDioOuUxXcC
-// -manage %%
-// -manage flags #0-+space
-// -manage min field-width
-// -manage precision
-// -manage flags hh, h, 1, 11, j, z
-// */
+/*
+INSTRUCTIONS:
+-prototyped similarly to printf
+-won’t do the buffer management in the printf function
+-manage following conversions: sSpdDioOuUxXcC
+-manage %%
+-manage flags #0-+space
+-manage min field-width
+-manage precision
+-manage flags hh, h, 1, 11, j, z
+*/

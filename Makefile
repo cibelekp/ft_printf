@@ -15,7 +15,7 @@ LIB_FILES	= ar -t
 
 ${NAME}: ${OBJECTS}
 	${MKLIB} ${NAME} ${OBJECTS}
-	
+
 all: ${NAME}
 
 clean:
@@ -26,4 +26,11 @@ fclean: clean
 
 re: fclean all
 
-.PHONY: all, clean, fclean, re
+.PHONY: all, clean, fclean, re, test, tclean
+
+$(VERBOSE).SILENT:
+test:
+	${CC} ${CFLAGS} ${SOURCES} testprintf.c
+	./a.out
+tclean: clean
+	${RM} ${TESTOBJ} a.out
