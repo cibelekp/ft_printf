@@ -17,10 +17,10 @@
 
 int	ft_putchar(int val)
 {
-	char c;
+	char c; // do i have to convert to char with a var?
 
 	if (val <= 0)
-		val += 256; // ver
+		val += 256; // check this
 	c = (char)val;
 	if (c > 0)
 		write(1, &c, 1);
@@ -46,8 +46,8 @@ int	ft_puthexa(unsigned long int nb, char *base)
 	len = 0;
 	if (nb >= 16)
 		len += ft_puthexa(nb / 16, base);
-	ft_putchar(base[nb % 16]);
-	return (len + 1);
+	len += ft_putchar(base[nb % 16]);
+	return (len);
 }
 
 int	ft_putnb(int nb)
@@ -67,11 +67,9 @@ int	ft_putnb(int nb)
 		nb *= -1;
 	}
 	if (nb >= 10)
-	{
 		len += ft_putnb(nb / 10);
-	}
-	ft_putchar(nb % 10 + '0');
-	return (len + 1);
+	len += ft_putchar(nb % 10 + '0');
+	return (len);
 }
 
 int	sort_args(char type, va_list arg, int len)
@@ -84,11 +82,17 @@ int	sort_args(char type, va_list arg, int len)
 		len += ft_putstr(va_arg(arg, char *));
 	else if (type == 'd' || type == 'i')
 		len += ft_putnb(va_arg(arg, int));
+	else if (type == 'u')
+	{
+		//handle unsigned long that are > INT_MAX
+		else
+			len += ft_putnb(va_arg(arg, int));
+	}
 	else if (type == 'x')
 		len += ft_puthexa(va_arg(arg, unsigned long int), "0123456789abcdef");
 	else if (type == 'p')
 	{
-		ptr = va_arg(arg, unsigned long int);
+		ptr = va_arg(arg, unsigned long int); //maybe put it inside puthexa
 		if (!ptr)
 			len += ft_putstr("(nil)");
 		else
