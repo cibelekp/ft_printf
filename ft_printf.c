@@ -2,116 +2,37 @@
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   ft_printf.c                                        :+:      :+:    :+:   */
-/*                                                    +:+ +:+        
-	+:+     */
-/*   By: ckojima- <ckojima-@student.42lisboa.com    +#+  +:+      
-	+#+        */
-/*                                                +#+#+#+#+#+  
-	+#+           */
-/*   Created: 2022/12/12 22:56:04 by ckojima-          #+#    #+#             */
-/*   Updated: 2022/12/12 22:56:04 by ckojima-         ###   ########.fr       */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ckojima- <ckojima-@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/12/17 14:13:45 by ckojima-          #+#    #+#             */
+/*   Updated: 2022/12/17 14:13:45 by ckojima-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 
-static int	ft_putchar(char c)
+
+static int	sort_args(char type, va_list arg)
 {
-	return (write(1, &c, 1));
-}
-
-static int	ft_putstr(char *s)
-{
-	int i;
-
-	i = -1;
-	if (s == NULL)
-		s = "(null)";
-	while (s[++i])
-		ft_putchar(s[i]);
-	return (i);
-}
-
-static int	ft_puthexa(unsigned long long nb, char *base)
-{
-	int len;
-
-	len = 0;
-	if (nb >= 16)
-		len += ft_puthexa(nb / 16, base);
-	len += ft_putchar(base[nb % 16]);
-	return (len);
-}
-
-static int	ft_putnb(int nb)
-{
-	int len;
-
-	len = 0;
-	if (nb == INT_MIN)
-		return (ft_putstr("-2147483648"));
-	if (nb < 0)
-	{
-		len += ft_putchar('-');
-		nb *= -1;
-	}
-	if (nb >= 10)
-		len += ft_putnb(nb / 10);
-	len += ft_putchar(nb % 10 + '0');
-	return (len);
-}
-
-// static int	ft_putptr(unsigned long long ptr)
-// {
-// 	int len;
-
-// 	len = 0;
-// 	if (!ptr)
-// 		return (ft_putstr("(nil)"));
-// 	else
-// 	{
-// 		len += ft_putstr("0x");
-// 		len += ft_putptr(ptr / 16);
-// 	}
-// 	len += ft_putchar("0123456789abcdef"[ptr % 16]);
-
-// 	return (len);
-// 	// return (ft_putstr("0x") +
-// 	// 		ft_puthexa(ptr, "0123456789abcdef"));
-// }
-
-static int	sort_args(char type, va_list arg, int len)
-{
-	//	unsigned long int ptr;
-
 	if (type == 'c')
-		len += ft_putchar(va_arg(arg, int));
+		return (ft_putchar(va_arg(arg, int)));
 	else if (type == 's')
-		len += ft_putstr(va_arg(arg, char *));
+		return (ft_putstr(va_arg(arg, char *)));
 	else if (type == 'd' || type == 'i')
-		len += ft_putnb(va_arg(arg, int));
+		return (ft_putnb(va_arg(arg, int)));
 	else if (type == 'u')
-	{
-		//	aux = va_arg(arg, unsigned int);
-		//	if (aux < INT_MAX)
-		len += ft_putnb(va_arg(arg, unsigned int));
-	}
+		return (ft_putu(va_arg(arg, unsigned int)));
 	else if (type == 'x')
-		len += ft_puthexa(va_arg(arg, unsigned long int), "0123456789abcdef");
+		return (ft_puthexa(va_arg(arg, unsigned int), "0123456789abcdef"));
 	else if (type == 'X')
-		len += ft_puthexa(va_arg(arg, unsigned long int), "0123456789ABCEDF");
+		return (ft_puthexa(va_arg(arg, unsigned int), "0123456789ABCDEF"));
 	else if (type == 'p')
 	{
-		return (ft_putptr(va_arg(arg, long int)));
-		// ptr = va_arg(arg, unsigned long int); // maybe put it inside puthexa
-		// if (!ptr)
-		// 	len += ft_putstr("(nil)");
-		// else
-		// 	return (ft_putstr("0x") +
-		// 			ft_puthexa(va_arg(arg, unsigned long int),
-		// 					"0123456789abcdef"));
+		write (1, "0x", 2);
+		return (2 + ft_putptr(va_arg(arg, unsigned long int), "0123456789abcdef"));
 	}
-	return (len);
+	return (0);
 }
 
 int	ft_printf(const char *str, ...)
@@ -131,7 +52,7 @@ int	ft_printf(const char *str, ...)
 			if (str[i] == '%')
 				len += write(1, &str[i], 1);
 			else
-				len = sort_args(str[i], args, len);
+				len += sort_args(str[i], args);
 		}
 		else
 		{

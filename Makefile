@@ -6,7 +6,7 @@ CFLAGS		= -Wall -Werror -Wextra
 
 NAME		= libftprintf.a
 HEAD		= ft_printf.h
-SOURCES		= ft_printf.c
+SOURCES		= ft_printf.c ft_cases.c
 
 OBJECTS		= ${SOURCES:.c=.o}
 MKLIB		= ar -rcs
