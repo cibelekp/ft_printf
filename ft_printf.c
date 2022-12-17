@@ -2,9 +2,12 @@
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   ft_printf.c                                        :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: ckojima- <ckojima-@student.42lisboa.com    +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
+/*                                                    +:+ +:+        
+	+:+     */
+/*   By: ckojima- <ckojima-@student.42lisboa.com    +#+  +:+      
+	+#+        */
+/*                                                +#+#+#+#+#+  
+	+#+           */
 /*   Created: 2022/12/12 22:56:04 by ckojima-          #+#    #+#             */
 /*   Updated: 2022/12/12 22:56:04 by ckojima-         ###   ########.fr       */
 /*                                                                            */
@@ -12,11 +15,8 @@
 
 #include "ft_printf.h"
 
-static int	ft_putchar(int c)
+static int	ft_putchar(char c)
 {
-	if (c < 0)
-		c += 256;
-	//	write(1, &c, 1); return (1); OR:
 	return (write(1, &c, 1));
 }
 
@@ -32,7 +32,7 @@ static int	ft_putstr(char *s)
 	return (i);
 }
 
-static int	ft_puthexa(unsigned long int nb, char *base)
+static int	ft_puthexa(unsigned long long nb, char *base)
 {
 	int len;
 
@@ -61,9 +61,28 @@ static int	ft_putnb(int nb)
 	return (len);
 }
 
+// static int	ft_putptr(unsigned long long ptr)
+// {
+// 	int len;
+
+// 	len = 0;
+// 	if (!ptr)
+// 		return (ft_putstr("(nil)"));
+// 	else
+// 	{
+// 		len += ft_putstr("0x");
+// 		len += ft_putptr(ptr / 16);
+// 	}
+// 	len += ft_putchar("0123456789abcdef"[ptr % 16]);
+
+// 	return (len);
+// 	// return (ft_putstr("0x") +
+// 	// 		ft_puthexa(ptr, "0123456789abcdef"));
+// }
+
 static int	sort_args(char type, va_list arg, int len)
 {
-	unsigned long int ptr;
+	//	unsigned long int ptr;
 
 	if (type == 'c')
 		len += ft_putchar(va_arg(arg, int));
@@ -73,9 +92,9 @@ static int	sort_args(char type, va_list arg, int len)
 		len += ft_putnb(va_arg(arg, int));
 	else if (type == 'u')
 	{
-	//	aux = va_arg(arg, unsigned int);
-	//	if (aux < INT_MAX)
-			len += ft_putnb(va_arg(arg, unsigned int));
+		//	aux = va_arg(arg, unsigned int);
+		//	if (aux < INT_MAX)
+		len += ft_putnb(va_arg(arg, unsigned int));
 	}
 	else if (type == 'x')
 		len += ft_puthexa(va_arg(arg, unsigned long int), "0123456789abcdef");
@@ -83,14 +102,14 @@ static int	sort_args(char type, va_list arg, int len)
 		len += ft_puthexa(va_arg(arg, unsigned long int), "0123456789ABCEDF");
 	else if (type == 'p')
 	{
-		ptr = va_arg(arg, unsigned long int); // maybe put it inside puthexa
-		if (!ptr)
-			len += ft_putstr("(nil)");
-		else
-		{
-			len += ft_putstr("0x");
-			len += ft_puthexa(va_arg(arg, unsigned long int), "0123456789abcdef");
-		}
+		return (ft_putptr(va_arg(arg, long int)));
+		// ptr = va_arg(arg, unsigned long int); // maybe put it inside puthexa
+		// if (!ptr)
+		// 	len += ft_putstr("(nil)");
+		// else
+		// 	return (ft_putstr("0x") +
+		// 			ft_puthexa(va_arg(arg, unsigned long int),
+		// 					"0123456789abcdef"));
 	}
 	return (len);
 }
@@ -110,10 +129,7 @@ int	ft_printf(const char *str, ...)
 		{
 			i++;
 			if (str[i] == '%')
-			{
-				write(1, &str[i], 1);
-				len += 1;
-			}
+				len += write(1, &str[i], 1);
 			else
 				len = sort_args(str[i], args, len);
 		}
@@ -129,7 +145,7 @@ int	ft_printf(const char *str, ...)
 
 /*
 NEXT STEPS:
-- corrigir %c
+- corrigir %p %u %x %X
 */
 
 /*
