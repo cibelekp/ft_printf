@@ -5,13 +5,12 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: ckojima- <ckojima-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/12/17 14:13:45 by ckojima-          #+#    #+#             */
-/*   Updated: 2022/12/17 14:13:45 by ckojima-         ###   ########.fr       */
+/*   Created: 2022/12/17 18:39:52 by ckojima-          #+#    #+#             */
+/*   Updated: 2022/12/17 18:39:52 by ckojima-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
-
 
 static int	sort_args(char type, va_list arg)
 {
@@ -22,24 +21,21 @@ static int	sort_args(char type, va_list arg)
 	else if (type == 'd' || type == 'i')
 		return (ft_putnb(va_arg(arg, int)));
 	else if (type == 'u')
-		return (ft_putu(va_arg(arg, unsigned int)));
+		return (put_u(va_arg(arg, unsigned int)));
 	else if (type == 'x')
-		return (ft_puthexa(va_arg(arg, unsigned int), "0123456789abcdef"));
+		return (put_hexa(va_arg(arg, unsigned int), BASEX));
 	else if (type == 'X')
-		return (ft_puthexa(va_arg(arg, unsigned int), "0123456789ABCDEF"));
+		return (put_hexa(va_arg(arg, unsigned int), BASEXUP));
 	else if (type == 'p')
-	{
-		write (1, "0x", 2);
-		return (2 + ft_putptr(va_arg(arg, unsigned long int), "0123456789abcdef"));
-	}
+		return (put_p(va_arg(arg, unsigned long int), BASEX, 1));
 	return (0);
 }
 
 int	ft_printf(const char *str, ...)
 {
-	va_list args;
-	int len;
-	int i;
+	va_list	args;
+	int		len;
+	int		i;
 
 	va_start(args, str);
 	i = -1;
@@ -65,21 +61,6 @@ int	ft_printf(const char *str, ...)
 }
 
 /*
-NEXT STEPS:
-- corrigir %p %u %x %X
-*/
-
-/*
-REMINDER:
-The var_type argument must be one of int, long, decimal, double, struct, union,
-	or pointer, or a typedef of one of these types.
-
-TEST:
-passar: null, off limits, no argument,
-	etc e comparar com os resultados do printf original
-*/
-
-/*
 INSTRUCTIONS:
 -prototyped similarly to printf
 -won’t do the buffer management in the printf function
@@ -89,4 +70,8 @@ INSTRUCTIONS:
 -manage min field-width
 -manage precision
 -manage flags hh, h, 1, 11, j, z
+
+REMINDER:
+The var_type argument must be one of int, long, decimal, double, struct, union,
+	or pointer, or a typedef of one of these types.
 */
